@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='question_form.css') }}">
+<main>
+<form method="post" class="post-form my-3">
+    {{ form.csrf_token }}
+    <!-- 오류표시 Start -->
+    {% for field, errors in form.errors.items() %}
+    <div class="alert alert-danger" role="alert">
+        <strong>{{ form[field].label }}</strong>: {{ ', '.join(errors) }}
+    </div>
+    {% endfor %}
+    <!-- 오류표시 End -->
+    <div class="form-group">
+        <label for="subject"></label>
+        <input type="text" class="form-control" name="subject" id="subject" placeholder="제목을 입력하세요"
+        value="{{ form.subject.data or '' }}">
+    </div>
+    <h6>20xx.xx.xx - {{ g.user.username }}</h6><hr>
+    <div class="form-group">
+        <label for="content"></label>
+        <textarea class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요">{{ form.content.data or '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" id="save">저장하기</button>
+    <a type="button" href="{{ url_for('main.index') }}" class="btn btn-secondary" id="can">취소</a>
+    <hr>
+    <h5>답변 3개</h5>
+    <div class="answer">
+        <ul class="list-group">
+            <li class="list-group-item">답변 미리보기 입니다</li>
+            <li class="list-group-item">답변 미리보기 입니다</li>
+            <li class="list-group-item">답변 미리보기 입니다</li>
+        </ul>
+    </div>
+</form>
+</main>
+<footer>
+Copyright &copy; 2022. All rights reserved.
+</footer>
+{% endblock %}

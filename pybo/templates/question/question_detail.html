@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='question_detail.css') }}">
+<main>
+    <h4 class="title_q">
+      {{ question.subject }}
+      {% if g.user == question.user %}
+      <span class="my-3">
+        <a href="{{ url_for('question.modify', question_id=question.id) }}"
+            class="btn btn-sm btn-outline-secondary">수정</a>
+        <a href="#" class="delete btn btn-sm btn-outline-secondary"
+          data-uri="{{ url_for('question.delete', question_id=question.id) }}">삭제</a>
+      </span>
+      {% endif %}
+    </h4>
+    <h6>
+      {{ question.create_date|datetime }} - {{ question.user.username }}
+    </h6><hr>
+
+    <div>
+        <p>{{ question.content|markdown }}</p>
+    </div><hr>
+
+    <h5>댓글 {{ question.answer_set|length }}개</h5>
+    
+  <form action="{{ url_for('answer.create', question_id=question.id) }}" method="post">
+        {{ form.csrf_token }}
+        <!-- 오류표시 Start -->
+        {% for field, errors in form.errors.items() %}
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ form[field].label }}</strong>: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}
+        <!-- 오류표시 End -->
+      <textarea {% if not g.user %}disabled{% endif %} class="form-control" name="content" id="content" rows="3" placeholder="{{ g.user.username }}님의 댓글을 입력해 주세요&#13;&#10;비방,욕설 등이 포함된 댓글은 제제 대상이 될 수 있습니다"></textarea>
+      <input class="btn btn-outline-primary" type="submit" value="답변등록">
+  </form>
+
+    <div class="answer">
+        <ul class="list-group">
+          {% for answer in question.answer_set %}
+            <li class="list-group-item"> {{ answer.user.username }}님: {{ answer.content }}
+              <span class="answer_info">
+               - {{ answer.create_date|datetime }}
+              </span>
+              {% if g.user == answer.user %}
+              <span class="my-3">
+                  <a href="{{ url_for('answer.modify', answer_id=answer.id) }}" class="edit_answer">수정</a>
+                  <a href="{{ url_for('answer.delete', answer_id=answer.id) }}" class="delete_answer">삭제</a>
+              </span>
+              {% endif %}
+              {% if g.user == answer.user %}
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+    </div>
+</main>
+<footer>
+  Copyright &copy; 2022. All rights reserved.
+</footer>
+{% endblock %}
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+    $(".delete").on('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+});
+</script>
+{% endblock %}
